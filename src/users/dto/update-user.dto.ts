@@ -4,7 +4,6 @@ import { IsOptional, IsEmail, MinLength, IsMongoId } from 'class-validator';
 // (Nếu không muốn import PartialType, có thể dùng @IsOptional() cho từng trường)
 
 export class UpdateUserDto {
-    // ID thường được lấy từ @Param, nhưng nếu nó có trong body và cần validate:
     @IsOptional()
     @IsMongoId({ message: 'ID phải là định dạng Mongo ObjectId hợp lệ.' })
     id?: string; 
