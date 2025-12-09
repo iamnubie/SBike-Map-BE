@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { CreateUserDto, LoginUserDto } from "../dto/create-user.dto";
+import { User } from "../users.model";
 
 @Injectable()
 export class AuthService {
@@ -88,5 +89,12 @@ export class AuthService {
         } catch (e) {
             throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    async logout(user: User) {
+        await this.userService.updateRefreshToken(
+            { email: user.email },
+            { refreshToken: null },
+        );
     }
 }

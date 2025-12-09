@@ -1,6 +1,7 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from "../services/auth.service";
 import { CreateUserDto, LoginUserDto } from "../dto/create-user.dto";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller('auth')
 export class AuthController {
@@ -22,5 +23,13 @@ export class AuthController {
     async refresh(@Body() body) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return await this.authService.refresh(body.refresh_token);
+    }
+
+    @UseGuards(AuthGuard())
+    @Post('logout')
+    async logout(@Req() req: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        await this.authService.logout(req.user);
+        return { statusCode: 200, message: 'Logout successful' };
     }
 }
