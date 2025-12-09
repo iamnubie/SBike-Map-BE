@@ -14,6 +14,10 @@ async function bootstrap() {
       // Tùy chọn để bật transformer (như chuyển string sang number/boolean, etc.)
       transform: true,
   }));
+
+  // const {httpAdapter} = app.get(HttpAdapterHost);
+  // app.useGlobalFilters(new (await import('./utils/exceptionLogger.filter')).ExceptionLoggerFilter(httpAdapter));
+  // //cach 1
   
   await app.listen(process.env.PORT ?? 3000);
 }

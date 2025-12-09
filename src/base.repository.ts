@@ -3,7 +3,7 @@ import { Model, FilterQuery, QueryOptions, Document, UpdateQuery } from 'mongoos
 // T đại diện cho Model/Entity cụ thể (ví dụ: User) và phải kế thừa Mongoose Document
 export class BaseRepository<T extends Document> {
   // Dependency Injection của Mongoose Model
-  constructor(private readonly model: Model<T>) {}
+  constructor(private readonly model: Model<T>) { }
 
   // 1. Tạo mới (Create)
   // doc là dữ liệu đầu vào (ví dụ: DTO). Tương thích với CreateQuery<T>
@@ -16,7 +16,7 @@ export class BaseRepository<T extends Document> {
   // Sử dụng FindByIdAndUpdateOptions cho tham số options rõ ràng hơn
   async findById(id: string, options?: QueryOptions): Promise<T | null> {
     // Trả về T hoặc null nếu không tìm thấy
-    return this.model.findById(id, null, options).exec(); 
+    return this.model.findById(id, null, options).exec();
   }
 
   // 3. Tìm một tài liệu theo điều kiện (Read One)
@@ -53,6 +53,14 @@ export class BaseRepository<T extends Document> {
   // 7. Cập nhật theo ID (Update By Id)
   async findByIdAndUpdate(id: string, update: UpdateQuery<T>): Promise<T | null> {
     return this.model.findByIdAndUpdate(id, update, { new: true }).exec();
+  }
+
+  async findByConditionAndUpdate(filter: FilterQuery<T>, update: UpdateQuery<T>): Promise<T | null> {
+    return this.model.findOneAndUpdate(
+      filter,
+      update,
+      { new: true } // QUAN TRỌNG: Thêm tùy chọn này để trả về document sau khi cập nhật
+    ).exec(); // QUAN TRỌNG: Thêm .exec() để thực thi truy vấn Mongoose
   }
 
   // 8. Cập nhật nhiều tài liệu (Update Many)

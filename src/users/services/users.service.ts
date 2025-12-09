@@ -4,6 +4,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserRepository } from '../user.repository';
 import { User } from '../users.model';
 import * as bcrypt from 'bcrypt';
+import { UserNotFoundException } from '../exceptions/userNotFound.exception';
 
 @Injectable()
 export class UsersService {
@@ -58,7 +59,8 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findById(id);
     if (!user) {
-      throw new NotFoundException(`Không tìm thấy User với ID: ${id}`);
+      // throw new NotFoundException(`Không tìm thấy User với ID: ${id}`);
+      throw new UserNotFoundException(id);
     }
     return user;
   }
@@ -91,4 +93,39 @@ export class UsersService {
     }
   }
 
+  // 7. Cập nhật Refresh Token
+  async updateRefreshToken(filter, update) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (update.refreshToken) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      update.refreshToken = await bcrypt.hash(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        this.reverse(update.refreshToken),
+        10
+      );
+    }
+    return await this.userRepository.findByConditionAndUpdate(filter, update);
+  }
+
+  async getUserByRefresh(refresh_token, email) {
+    const user = await this.findByEmail(email);
+    if (!user) {
+      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const is_equal = await bcrypt.compare(
+      this.reverse(refresh_token),
+      user.refreshToken
+    );
+    if (!is_equal) {
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    }
+    return user;
+  }
+
+  private reverse(s) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+    return s.split('').reverse().join('');
+  }
 }
+

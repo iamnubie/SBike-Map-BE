@@ -8,17 +8,19 @@ import {
   Delete,
   UseGuards,
   Req,
+  UseFilters,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ExceptionLoggerFilter } from 'src/utils/exceptionLogger.filter';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
   
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   // eslint-disable-next-line @typescript-eslint/require-await
   async getProfile(@Req() req: any) {
@@ -36,10 +38,11 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(id);
-  // }
+  @Get(':id')
+  @UseFilters(ExceptionLoggerFilter)//cach 3
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {

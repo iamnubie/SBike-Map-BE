@@ -17,4 +17,10 @@ export class AuthController {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return await this.authService.login(loginUserDto);
     }
+
+    @Post('refresh')
+    async refresh(@Body() body) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+        return await this.authService.refresh(body.refresh_token);
+    }
 }
