@@ -3,10 +3,10 @@ import { Schema, Document } from 'mongoose';
 const UserSchema = new Schema(
     {
         username: { type: String, required: true },
-        password: { type: String, required: true },
+        password: { type: String, required: false },
         email: { type: String, required: true, unique: true },
         refreshToken: { type: String, required: false },
-        //   createdAt: { type: Date, default: Date.now },
+        firebase_uid: { type: String, required: false, unique: true },
     },
     {
         timestamps: true,
@@ -18,8 +18,8 @@ export {UserSchema};
 
 export interface User extends Document {
     username: string;
-    password: string;
+    password?: string;
     email: string;
-    refreshToken: string;
-    // createdAt: Date;
+    refreshToken?: string;
+    firebase_uid?: string;
 }

@@ -3,6 +3,7 @@ import { UsersService } from "./users.service";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { CreateUserDto, LoginUserDto } from "../dto/create-user.dto";
 import { User } from "../users.model";
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,41 @@ export class AuthService {
     async login(loginUserDto: LoginUserDto) {
         const user = await this.userService.findByLogin(loginUserDto);
         const token = await this._createToken(user);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return {
+            email: user.email,
+            ...token,
+        };
+    }
+
+    async firebaseLogin(idToken: string) {
+        let uid: string;
+        let email: string;
+        let name: string = '';
+
+        try {
+            // 1. Xác minh Token từ FE và giải mã
+            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            uid = decodedToken.uid;
+            email = decodedToken.email!;
+            name = decodedToken.name || '';
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            // Token không hợp lệ, hết hạn, hoặc bị giả mạo
+            throw new HttpException('Invalid or expired Firebase ID token.', HttpStatus.UNAUTHORIZED);
+        }
+
+        // 2. Tìm User trong DB nội bộ bằng UID
+        let user = await this.userService.findByFirebaseUid(uid);
+
+        if (!user) {
+            // 3. Tự động Đăng ký nếu chưa có trong DB (Provisioning)
+            user = await this.userService.createFirebaseUser(uid, email, name);
+        }
+
+        // 4. Tạo Token nội bộ (sử dụng _createToken sẵn có của bạn)
+        const token = await this._createToken(user);
+
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return {
             email: user.email,

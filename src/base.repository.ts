@@ -59,7 +59,7 @@ export class BaseRepository<T extends Document> {
     return this.model.findOneAndUpdate(
       filter,
       update,
-      { new: true } // QUAN TRỌNG: Thêm tùy chọn này để trả về document sau khi cập nhật
+      { new: true, upsert: true } // QUAN TRỌNG: Thêm tùy chọn này để trả về document sau khi cập nhật
     ).exec(); // QUAN TRỌNG: Thêm .exec() để thực thi truy vấn Mongoose
   }
 

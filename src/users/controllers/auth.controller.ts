@@ -19,6 +19,12 @@ export class AuthController {
         return await this.authService.login(loginUserDto);
     }
 
+    @Post('firebase-login')
+    async firebaseLogin(@Body() body: { idToken: string }) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return await this.authService.firebaseLogin(body.idToken);
+    }
+
     @Post('refresh')
     async refresh(@Body() body) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access

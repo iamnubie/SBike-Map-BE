@@ -31,6 +31,28 @@ export class UsersService {
     return this.userRepository.create(createUserDto);
   }
 
+  async createFirebaseUser(firebase_uid: string, email: string, username: string = ''): Promise<User> {
+    // ... (Kiểm tra existingUser giữ nguyên)
+
+    //  SỬA: Đảm bảo username không bao giờ rỗng nếu Schema yêu cầu
+    const safeUsername = username || 'User_' + firebase_uid.substring(0, 5);
+
+    const newUser = {
+      firebase_uid,
+      email,
+      username: safeUsername, // Sử dụng tên an toàn
+    };
+
+    //  Đảm bảo rằng hàm create xử lý lỗi email đã tồn tại (nếu cần)
+    try {
+      return this.userRepository.create(newUser);
+    } catch (e) {
+      // Log lỗi Mongoose chi tiết nếu có
+      console.error("Mongoose Create Error:", e);
+      throw new HttpException('Failed to create user profile in DB.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async findByLogin({ email, password }: LoginUserDto) {
     const user = await this.userRepository.findOneByCondition({ email });
 
@@ -100,7 +122,7 @@ export class UsersService {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       update.refreshToken = await bcrypt.hash(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        this.reverse(update.refreshToken),
+        update.refreshToken,
         10
       );
     }
@@ -114,7 +136,7 @@ export class UsersService {
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const is_equal = await bcrypt.compare(
-      this.reverse(refresh_token),
+      refresh_token,
       user.refreshToken
     );
     if (!is_equal) {
@@ -123,9 +145,10 @@ export class UsersService {
     return user;
   }
 
-  private reverse(s) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-    return s.split('').reverse().join('');
+  async findByFirebaseUid(firebase_uid: string): Promise<User | null> {
+    // Gọi hàm tìm kiếm từ Repository
+    return this.userRepository.findOneByCondition({ firebase_uid });
   }
+
 }
 

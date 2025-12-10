@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { FirebaseModule } from './firebase/firebase.module';
 // import { APP_FILTER } from '@nestjs/core';
 // import { ExceptionLoggerFilter } from './utils/exceptionLogger.filter';
 
@@ -12,6 +13,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     UsersModule,
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGODB_URI!),
+    FirebaseModule,
   ],
   controllers: [AppController],
   providers: [
