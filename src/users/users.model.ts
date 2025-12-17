@@ -7,6 +7,7 @@ const UserSchema = new Schema(
         email: { type: String, required: true, unique: true },
         refreshToken: { type: String, required: false },
         firebase_uid: { type: String, required: false, unique: true },
+        avatarUrl: { type: String, required: false },
     },
     {
         timestamps: true,
@@ -22,4 +23,5 @@ export interface User extends Document {
     email: string;
     refreshToken?: string;
     firebase_uid?: string;
+    avatarUrl?: string;
 }

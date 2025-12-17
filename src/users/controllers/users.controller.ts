@@ -9,17 +9,24 @@ import {
   UseGuards,
   Req,
   UseFilters,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ExceptionLoggerFilter } from 'src/utils/exceptionLogger.filter';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
-  
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly cloudinaryService: CloudinaryService
+  ) { }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -38,6 +45,19 @@ export class UsersController {
     
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
     return this.usersService.update(req.user._id, updateUserDto); 
+  }
+
+  @Post('upload-avatar')
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('file')) 
+  async uploadAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const optimizedUrl = await this.cloudinaryService.uploadImage(file, req.user._id);
+    // Lưu URL vào DB
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+    await this.usersService.update(req.user._id, { avatarUrl: optimizedUrl } as any);
+
+    return { url: optimizedUrl };
   }
 
   @Post()
