@@ -28,6 +28,18 @@ export class UsersController {
     return req.user;
   }
 
+  // Endpoint để user tự cập nhật hồ sơ (Dùng Token để xác định user)
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('profile/me') // Đường dẫn: /users/profile/me
+  async updateMyProfile(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
+    // req.user được passport-jwt giải mã và gán vào. 
+    // Giả sử req.user chứa _id hoặc userId.
+    // Dựa vào file user.repository.ts, User kế thừa Document nên sẽ có _id
+    
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+    return this.usersService.update(req.user._id, updateUserDto); 
+  }
+
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);

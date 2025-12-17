@@ -123,7 +123,7 @@ export class UsersService {
       update.refreshToken = await bcrypt.hash(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         update.refreshToken,
-        10
+        5
       );
     }
     return await this.userRepository.findByConditionAndUpdate(filter, update);

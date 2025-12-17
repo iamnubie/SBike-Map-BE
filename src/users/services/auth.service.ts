@@ -33,13 +33,17 @@ export class AuthService {
     }
 
     async firebaseLogin(idToken: string) {
+        console.log('--- Firebase ID Token received from Frontend ---');
+        console.log(idToken);
         let uid: string;
         let email: string;
         let name: string = '';
 
         try {
             // 1. Xác minh Token từ FE và giải mã
+            console.time('VerifyFirebase');
             const decodedToken = await admin.auth().verifyIdToken(idToken);
+            console.timeEnd('VerifyFirebase');
             uid = decodedToken.uid;
             email = decodedToken.email!;
             name = decodedToken.name || '';
@@ -58,11 +62,14 @@ export class AuthService {
         }
 
         // 4. Tạo Token nội bộ (sử dụng _createToken sẵn có của bạn)
+        console.time('CreateToken');
         const token = await this._createToken(user);
+        console.timeEnd('CreateToken');
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return {
             email: user.email,
+            username: user.username,
             ...token,
         };
     }
