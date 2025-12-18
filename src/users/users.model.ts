@@ -8,6 +8,7 @@ const UserSchema = new Schema(
         refreshToken: { type: String, required: false },
         firebase_uid: { type: String, required: false, unique: true },
         avatarUrl: { type: String, required: false },
+        weight: { type: Number, required: false, default: null },
     },
     {
         timestamps: true,
@@ -24,4 +25,5 @@ export interface User extends Document {
     refreshToken?: string;
     firebase_uid?: string;
     avatarUrl?: string;
+    weight?: number;
 }

@@ -60,6 +60,16 @@ export class UsersController {
     return { url: optimizedUrl };
   }
 
+  @Post('update-profile')
+  @UseGuards(AuthGuard('jwt')) // Bắt buộc đăng nhập
+  async updatePhysicalStats(@Req() req: any, @Body() body: { weight: number }) {
+    // req.user._id lấy từ token (do AuthGuard giải mã)
+    // body.weight là số cân nặng gửi từ Android
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+    return this.usersService.update(req.user._id, { weight: body.weight } as any);
+  }
+
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
