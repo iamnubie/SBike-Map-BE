@@ -29,10 +29,9 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
-  // eslint-disable-next-line @typescript-eslint/require-await
   async getProfile(@Req() req: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-    return req.user;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    return this.usersService.findOne(req.user._id);
   }
 
   // Endpoint để user tự cập nhật hồ sơ (Dùng Token để xác định user)
