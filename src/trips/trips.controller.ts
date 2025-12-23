@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Req, UseGuards, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport'; // Giả sử bạn dùng Passport JWT
 import { TripsService } from './trips.service';
 
@@ -21,6 +21,12 @@ export class TripsController {
     async getHistory(@Req() req) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const userId = req.user._id;
+        return await this.tripsService.getUserHistory(userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('user/:id')
+    async getUserTrips(@Param('id') userId: string) {
         return await this.tripsService.getUserHistory(userId);
     }
 }

@@ -88,4 +88,12 @@ export class SearchService implements OnModuleInit {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return results;
   }
+
+  async findAll() {
+    return this.placeModel.find().sort({ createdAt: -1 }).exec();
+  }
+
+  async deletePlace(id: string) {
+    return this.placeModel.findByIdAndDelete(id).exec();
+  }
 }

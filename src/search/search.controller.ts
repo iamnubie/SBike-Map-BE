@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Delete, Param, Query, UseGuards } from '@nestjs/common';
 import { SearchService } from './search.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('search')
 export class SearchController {
@@ -25,5 +26,16 @@ export class SearchController {
   async search(@Query('q') query: string) {
     if (!query) return [];
     return this.searchService.searchSmart(query);
+  }
+
+  @Get('all')
+  async getAllPlaces() {
+    return this.searchService.findAll();
+  }
+
+  @UseGuards(AuthGuard('jwt')) // Bắt buộc đăng nhập mới được xóa
+  @Delete(':id')
+  async deletePlace(@Param('id') id: string) {
+    return this.searchService.deletePlace(id);
   }
 }

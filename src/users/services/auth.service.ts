@@ -17,7 +17,10 @@ export class AuthService {
         const token = await this._createToken(user);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return {
+            _id: user._id,          
             email: user.email,
+            username: user.username, 
+            roles: user.roles,     
             ...token,
         };
     }
@@ -27,7 +30,10 @@ export class AuthService {
         const token = await this._createToken(user);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return {
+            _id: user._id,           
             email: user.email,
+            username: user.username, 
+            roles: user.roles,       
             ...token,
         };
     }

@@ -5,6 +5,13 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // THÊM ĐOẠN NÀY ĐỂ BẬT KẾT NỐI CHO ADMIN
+  app.enableCors({
+    origin: true, // Cho phép tất cả các trang web kết nối
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   // Thêm dòng này để kích hoạt validation toàn cục:
   app.useGlobalPipes(new ValidationPipe({
       // Tùy chọn để loại bỏ các trường không mong muốn
