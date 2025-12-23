@@ -9,6 +9,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { TripsModule } from './trips/trips.module';
 // import { APP_FILTER } from '@nestjs/core';
 // import { ExceptionLoggerFilter } from './utils/exceptionLogger.filter';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TripsModule } from './trips/trips.module';
     FirebaseModule,
     CloudinaryModule,
     TripsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [
